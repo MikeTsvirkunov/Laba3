@@ -9,7 +9,7 @@
 using namespace std;
 
 class Menu{
-	private:
+	protected:
 		vector <string> menu;
 		HANDLE hStdOut;
 		WORD background;
@@ -49,10 +49,33 @@ int Menu::catch_events(){
 	if (z == 119 || z == 72) { position--; }
 	else if (z == 115 || z == 80) { position++; }
 	else if (z == 13) { return position; }
-	if (position > menu.size()) { position = 0; }
-	else if (position < 0) { position = menu.size() - 1;}
-	
+	if (position == menu.size()) { position = 0; }
+	else if (position < 0) { position = menu.size()-1;}
 	return -1;
+}
+
+
+class HMenu: public Menu{
+	
+	public:
+		HMenu(vector <string> m, HANDLE hOut, WORD bg = BACKGROUND_BLUE, WORD fg=FOREGROUND_INTENSITY, int pos=0): Menu(m, hOut, bg, fg, pos){}
+		void print_menu();
+		
+};
+
+void HMenu::print_menu(){
+	system("CLS");
+	for (int i = 0; i < menu.size(); i++)
+	{
+		if (i == position)
+		{
+			SetConsoleTextAttribute(hStdOut, background);
+			cout << menu[i] << "\t";
+			SetConsoleTextAttribute(hStdOut, 0x00 | foreground);
+		}
+	else { cout << menu[i] << "\t"; }
+	}
+	cout<<endl;
 }
 
 int main()
@@ -68,7 +91,7 @@ int main()
 	m.push_back("ADD1");
 	m.push_back("Exit");
 	
-	Menu x = Menu(m, hStdOut);
+	HMenu x = HMenu(m, hStdOut);
 	int f = 0;
 	while (f < 2){
 		x.print_menu();
